@@ -11,7 +11,7 @@ applications:
             - cd ../../ && npm ci
         build:
           commands:
-            - npx next build
+            - cd ../../apps/exams && npx next build
       artifacts:
         baseDirectory: .next
         files:
