@@ -16,10 +16,10 @@ applications:
             - ls -la src/
             - npx next build
       artifacts:
-        baseDirectory: apps/exams/.next
+        baseDirectory: .next
         files:
           - "**/*"
       cache:
         paths:
           - node_modules/**/*
-          - apps/exams/.next/cache/**/*
+          - .next/cache/**/*
