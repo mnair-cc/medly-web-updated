@@ -11,7 +11,10 @@ applications:
             - npm ci
         build:
           commands:
-            - cd apps/exams && npx next build
+            - pwd
+            - ls -la
+            - ls -la src/
+            - npx next build
       artifacts:
         baseDirectory: apps/exams/.next
         files:
