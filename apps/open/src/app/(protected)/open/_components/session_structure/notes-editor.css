@@ -1,0 +1,198 @@
+/* Notion-like styling */
+
+.ProseMirror,
+.tiptap {
+  padding: 0;
+}
+
+/* Text selection color */
+.ProseMirror ::selection,
+.tiptap ::selection {
+  background-color: rgba(5, 176, 255, 0.2) !important;
+}
+
+/* Placeholder */
+.ProseMirror p.is-editor-empty:first-child::before,
+.tiptap p.is-editor-empty:first-child::before,
+[data-placeholder] p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #9ca3af;
+  pointer-events: none;
+  height: 0;
+}
+
+/* Headings - Clear visual hierarchy */
+.ProseMirror h1,
+.tiptap h1 {
+  position: relative;
+  font-size: 22px;
+  font-family: var(--font-sf-pro-rounded-bold);
+  line-height: 1.4;
+  margin-top: 32px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.ProseMirror h1:first-child,
+.tiptap h1:first-child {
+  margin-top: 0;
+}
+.ProseMirror h1::before,
+/* .tiptap h1::before {
+  content: "#";
+  position: absolute;
+  left: -20px;
+  color: rgba(89, 89, 89, 0.4);
+  font-family: var(--font-sf-pro-rounded-bold);
+  font-size: 22px;
+} */
+.ProseMirror h2,
+.tiptap h2 {
+  position: relative;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-sf-pro-rounded-bold);
+  line-height: 1.4;
+  margin-top: 24px;
+  margin-bottom: 4px;
+}
+.ProseMirror h2:first-child,
+.tiptap h2:first-child {
+  margin-top: 0;
+}
+.ProseMirror h2::before,
+/* .tiptap h2::before {
+  content: "##";
+  position: absolute;
+  left: -28px;
+  color: rgba(89, 89, 89, 0.3);
+  font-family: var(--font-sf-pro-rounded-bold);
+  font-size: 14px;
+} */
+.ProseMirror h3,
+.tiptap h3 {
+  position: relative;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-sf-pro-rounded-semibold);
+  line-height: 1.5;
+  margin-top: 20px;
+  margin-bottom: 2px;
+}
+.ProseMirror h3:first-child,
+.tiptap h3:first-child {
+  margin-top: 0;
+}
+.ProseMirror h3::before,
+/* .tiptap h3::before {
+  content: "###";
+  position: absolute;
+  left: -36px;
+  color: rgba(89, 89, 89, 0.25);
+  font-family: var(--font-sf-pro-rounded-semibold);
+  font-size: 12px;
+} */
+
+/* Horizontal rules */
+.ProseMirror hr,
+.tiptap hr {
+  border: none;
+  border-top: 1px solid #e5e5ea;
+  margin: 24px 0;
+}
+
+/* Paragraphs */
+.ProseMirror p,
+.tiptap p {
+  margin-top: 4px;
+  margin-bottom: 15px;
+  line-height: 1.5;
+  font-weight: 500;
+  font-size: 15px;
+}
+.ProseMirror p:first-child,
+.tiptap p:first-child {
+  margin-top: 0;
+}
+
+/* Lists */
+.ProseMirror ul,
+.ProseMirror ol,
+.tiptap ul,
+.tiptap ol {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  padding-left: 4px;
+}
+
+.ProseMirror li,
+.tiptap li {
+  margin-top: 0.125em;
+  margin-bottom: 0.125em;
+  line-height: 1.6;
+}
+
+/* Remove paragraph margins inside list items */
+.ProseMirror li p,
+.tiptap li p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Code blocks */
+.ProseMirror pre,
+.tiptap pre {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  padding: 1em;
+  border-radius: 4px;
+}
+
+/* Blockquotes */
+.ProseMirror blockquote,
+.tiptap blockquote {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  padding-left: 1em;
+}
+
+/* Task lists */
+.ProseMirror ul[data-type="taskList"],
+.tiptap ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+.ProseMirror ul[data-type="taskList"] li,
+.tiptap ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.125em;
+}
+
+.ProseMirror ul[data-type="taskList"] li > label,
+.tiptap ul[data-type="taskList"] li > label {
+  margin-right: 0.5em;
+  user-select: none;
+}
+
+.ProseMirror ul[data-type="taskList"] li input[type="checkbox"],
+.tiptap ul[data-type="taskList"] li input[type="checkbox"] {
+  margin-top: 0.3em;
+}
+
+/* Citation styles */
+.citation {
+  background-color: #f2f2f7;
+  padding: 4px 8px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #1C1C1E;
+  font-family: var(--font-sf-pro-rounded-bold);
+  white-space: nowrap;
+}
+.citation:hover {
+  background-color: #e5e5ea;
+}

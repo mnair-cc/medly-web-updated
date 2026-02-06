@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(source-control)",
+      "Skill(documenting-prs)",
+      "Bash(ls:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(gt log:*)",
+      "Bash(gt ls:*)",
+      "Bash(gh pr view:*)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": [
+      "Bash(gt create:*)",
+      "Bash(gt submit:*)",
+      "Bash(gt modify:*)",
+      "Bash(gt sync:*)",
+      "Bash(gt move:*)",
+      "Bash(gt reorder:*)",
+      "Bash(gt branch delete:*)",
+      "Bash(gh pr edit:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}

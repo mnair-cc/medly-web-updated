@@ -1,0 +1,202 @@
+.markdownContent {
+  font-family: "Charter", serif;
+  font-size: 17px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.markdownContent h1 {
+  font-size: 22px;
+  font-family: "Helvetica Neue", sans-serif;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.markdownContent h2 {
+  font-size: 17px;
+  font-family: "Helvetica Neue", sans-serif;
+  font-weight: 500;
+  /* margin-top: 1rem; */
+  margin-bottom: 0.5rem;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.markdownContent h3 {
+  font-size: 19px;
+  font-family: "Helvetica Neue", sans-serif;
+  font-weight: 500;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  color: #05b0ff;
+}
+
+.markdownContent h4 {
+  font-size: 14px;
+  font-family: "Helvetica Neue", sans-serif;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  margin-top: -0.5rem;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.markdownContent ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.markdownContent ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 2rem 0;
+  max-width: 100%;
+}
+
+/* Mobile-only: constrain table wrapper to viewport width minus padding */
+@media (max-width: 639px) {
+  .tableWrapper {
+    max-width: calc(100vw - 64px);
+  }
+}
+
+.learnTableWrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1rem 0;
+  max-width: 100%;
+}
+
+/* Mobile-only: constrain learn table wrapper (more padding in learn mode) */
+@media (max-width: 639px) {
+  .learnTableWrapper {
+    max-width: calc(100vw - 112px);
+  }
+}
+
+.markdownContent table {
+  font-family: sans-serif;
+  font-size: 14px;
+  table-layout: fixed;
+  border: 1px solid #f2f2f7;
+  border-radius: 16px;
+  margin: 0 auto;
+  display: table;
+  width: auto;
+  min-width: min-content;
+}
+
+.markdownContent table td {
+  padding: 0.5rem 1rem;
+  /* border-right: 1px solid #f2f2f7; */
+  text-align: center;
+}
+
+.markdownContent table th {
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #f2f2f7;
+  border-top: 1px solid #f2f2f7;
+  /* border-right: 1px solid #f2f2f7; */
+  /* background-color: white; */
+  font-weight: 600;
+  text-align: center;
+}
+
+.markdownContent table th:last-child {
+  border-right: 0;
+}
+
+.markdownContent table td:last-child {
+  border-right: 0;
+}
+
+.markdownContent table tr:last-child td {
+  border-bottom: 0;
+}
+
+.markdownContent img {
+  padding: 1rem 0;
+  max-height: 400px;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
+
+.markdownContent figcaption {
+  font-size: 14px;
+  font-family: "Helvetica Neue", sans-serif;
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.markdownContent .highlighted-box-comparison,
+.markdownContent .highlighted-box-key-terms,
+.markdownContent .highlighted-box-worked-example,
+.markdownContent .highlighted-box-practical {
+  background-color: #e9f6fb;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+/* LaTeX Styling */
+.markdownContent .math-inline {
+  padding: 0 0.25rem;
+  margin: 0 0.125rem;
+}
+
+.markdownContent .math-display {
+  padding: 1rem 0;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure the KaTeX renders properly in the context */
+.markdownContent .katex-display {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.markdownContent .katex {
+  font-size: 1.1em;
+}
+
+/* Make sure inline math doesn't break the line flow */
+.markdownContent .katex-inline {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 0.125rem;
+}
+
+.markdownContent p {
+  margin-bottom: 1rem;
+}
+
+.markdownContent br {
+  margin-bottom: 1rem;
+  display: block;
+  content: "";
+}
+
+/* Add these styles to your existing CSS file */
+.markdownContent div.key-terms-container {
+  margin: 1.5rem 0;
+  padding: 0;
+  display: block;
+}

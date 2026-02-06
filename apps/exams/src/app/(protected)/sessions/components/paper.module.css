@@ -1,0 +1,184 @@
+.markdownContent {
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.4;
+  /* font-family: 'Arial', sans-serif; */
+}
+
+.markdownContent h1 {
+  font-size: 15px;
+  font-family: "Helvetica Neue", sans-serif;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.markdownContent h2 {
+  font-size: 15px;
+  font-family: "Helvetica Neue", sans-serif;
+  font-weight: 500;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  /* color: #05B0FF */
+}
+
+.markdownContent h3 {
+  font-size: 16px;
+  font-family: "Helvetica Neue", sans-serif;
+  font-weight: 500;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  /* color: #05B0FF */
+}
+
+.markdownContent h4 {
+  font-size: 14px;
+  font-family: "Helvetica Neue", sans-serif;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  margin-top: -0.5rem;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.markdownContent ul {
+  list-style-type: disc;
+  line-height: 0.6;
+  padding-left: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.markdownContent ol {
+  list-style-type: decimal;
+  line-height: 1;
+  padding-left: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.markdownContent table {
+  font-family: sans-serif;
+  font-size: 14px;
+  table-layout: fixed;
+  border: 1px solid #f2f2f7;
+  border-radius: 16px;
+  margin: 2rem auto;
+  line-height: 1.2rem;
+}
+
+.markdownContent table td {
+  padding: 0.6rem 1rem;
+  border-right: 1px solid #f2f2f7;
+  text-align: center;
+  border-bottom: 1px solid #f2f2f7;
+}
+
+.markdownContent table th {
+  padding: 1rem 1rem;
+  border-bottom: 1px solid #f2f2f7;
+  border-right: 1px solid #f2f2f7;
+  background-color: #f8f8fb;
+  font-weight: 500;
+  text-align: center;
+}
+
+.markdownContent table th:last-child {
+  border-right: 0;
+}
+
+.markdownContent table td:last-child {
+  border-right: 0;
+}
+
+.markdownContent table tr:last-child td {
+  border-bottom: 0;
+}
+
+.markdownContent img {
+  padding: 1rem 0;
+  max-height: 400px;
+  margin: 0 auto;
+  /* filter: grayscale(100%); */
+  max-width: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+/* .markdownContent svg {
+  max-width: 100%;
+  max-height: 400px;
+  margin: 1rem auto;
+  display: block;
+  width: auto;
+  height: auto;
+} */
+
+.markdownContent figcaption {
+  font-size: 14px;
+  font-family: "Helvetica Neue", sans-serif;
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.markdownContent .highlighted-box-comparison,
+.markdownContent .highlighted-box-key-terms,
+.markdownContent .highlighted-box-worked-example,
+.markdownContent .highlighted-box-practical {
+  background-color: #e9f6fb;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+/* LaTeX Styling */
+.markdownContent .math-inline {
+  padding: 0 0.25rem;
+  margin: 0 0.125rem;
+}
+
+.markdownContent .math-display {
+  padding: 1rem 0;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+}
+
+/* Ensure the KaTeX renders properly in the context */
+.markdownContent .katex-display {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+}
+
+.markdownContent .katex {
+  font-size: 1.1em;
+}
+
+/* Make sure inline math doesn't break the line flow */
+.markdownContent .katex-inline {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 0.125rem;
+}
+
+.markdownContent p {
+  margin-bottom: 1rem;
+}
+
+.markdownContent br {
+  margin-bottom: 1rem;
+  display: block;
+  content: "";
+}
+
+/* Add these styles to your existing CSS file */
+.markdownContent div.key-terms-container {
+  margin: 1.5rem 0;
+  padding: 0;
+  display: block;
+}
+
+.markdownContent li {
+  margin-bottom: 0.5rem;
+}

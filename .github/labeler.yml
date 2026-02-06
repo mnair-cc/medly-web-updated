@@ -1,0 +1,24 @@
+# Label configuration for actions/labeler
+# https://github.com/actions/labeler
+
+# Open App - anything in apps/open/
+app:open:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "apps/open/**"
+
+# Exams App - anything in apps/exams/
+app:exams:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "apps/exams/**"
+
+# Infra - monorepo configuration files at root level
+infra:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - "package.json"
+          - "package-lock.json"
+          - "turbo.json"
+          - "scripts/**"

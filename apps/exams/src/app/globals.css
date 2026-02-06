@@ -1,0 +1,333 @@
+@import url("https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@300;400;500;600;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* Custom Easing Functions */
+  --ease-in-quad: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  --ease-in-cubic: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  --ease-in-quart: cubic-bezier(0.895, 0.03, 0.685, 0.22);
+  --ease-in-quint: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+  --ease-in-expo: cubic-bezier(0.95, 0.05, 0.795, 0.035);
+  --ease-in-circ: cubic-bezier(0.6, 0.04, 0.98, 0.335);
+
+  --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-out-circ: cubic-bezier(0.075, 0.82, 0.165, 1);
+
+  --ease-in-out-quad: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
+  --ease-in-out-expo: cubic-bezier(1, 0, 0, 1);
+  --ease-in-out-circ: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+}
+
+/* Update highlight animation */
+@keyframes highlightFade {
+  0% {
+    background-color: rgb(154 223 255 / 0%);
+  }
+
+  100% {
+    background-color: rgb(154 223 255 / 100%);
+  }
+}
+
+/* Slide in from left animation */
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Slide out to left animation */
+@keyframes slide-out-left {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Text fade from black to grey */
+@keyframes text-fade-to-grey {
+  from {
+    color: #000000;
+  }
+  to {
+    color: rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Add strikethrough decoration */
+@keyframes add-strikethrough {
+  from {
+    text-decoration: none;
+  }
+  to {
+    text-decoration: line-through;
+  }
+}
+
+/* Tick circle fade in animation (no scale) */
+@keyframes tick-circle-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Tick path scale in animation */
+@keyframes tick-path-scale-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Shake animation for incorrect highlights - iOS style */
+@keyframes shake-incorrect {
+  0% {
+    transform: translateX(0);
+  }
+  16% {
+    transform: translateX(-8px);
+  }
+  33% {
+    transform: translateX(6px);
+  }
+  50% {
+    transform: translateX(-4px);
+  }
+  66% {
+    transform: translateX(3px);
+  }
+  83% {
+    transform: translateX(-1px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* .bg-\[\#9ADFFF\] {
+  animation: highlightFade 1s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  background-color: rgb(154 223 255 / 0%);
+} */
+
+/* Custom Sonner Toast Styles */
+[data-sonner-toaster] {
+  --toast-bg: #999999;
+  --toast-color: #ffffff;
+  --toast-border-radius: 999px;
+  --toast-font-size: 14px;
+  --toast-font-family: var(--font-rounded-bold);
+}
+
+[data-sonner-toast] {
+  background: var(--toast-bg) !important;
+  color: var(--toast-color) !important;
+  border-radius: var(--toast-border-radius) !important;
+  font-size: var(--toast-font-size) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  width: fit-content !important;
+  max-width: 90vw !important;
+  min-width: 200px !important;
+  text-align: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Center the toast content wrapper */
+[data-sonner-toast] > div,
+[data-sonner-toast] [data-content] {
+  text-align: center !important;
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Toast icon sizing */
+[data-sonner-toast] [data-icon] {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+[data-sonner-toast] svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Success toast specific styles */
+[data-sonner-toast][data-type="success"] {
+  background: #333333 !important;
+  color: white !important;
+  border: 0px solid white !important;
+}
+
+[data-sonner-toast][data-type="success"] [data-icon],
+[data-sonner-toast][data-type="success"] svg {
+  display: none !important;
+}
+
+/* Error toast specific styles */
+[data-sonner-toast][data-type="error"] {
+  background: #ef4444 !important;
+  color: white !important;
+  border: 0px solid white !important;
+}
+
+[data-sonner-toast][data-type="error"] [data-icon],
+[data-sonner-toast][data-type="error"] svg {
+  display: none !important;
+}
+
+/* Make KaTeX radicals/arrows (SVG) visible regardless of global SVG rules */
+.katex svg {
+  /* cancel “responsive svg” globals */
+  height: initial !important;
+  width: initial !important;
+  max-width: none !important;
+
+  /* radicals have long overbars; don't clip the hook */
+  overflow: visible;
+}
+
+.katex svg path {
+  /* if you (or a lib) set svg/path to fill:none or transparent, this restores it */
+  fill: currentColor;
+  stroke: currentColor;
+  fill-opacity: 1;
+  stroke-opacity: 1;
+}
+
+/* Notes editor rewrite animation */
+@keyframes pm-rewrite-fade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pm-rewrite-fade-in {
+  animation: pm-rewrite-fade-slide 300ms var(--ease-out-cubic) forwards;
+}
+
+/* Flashcard generation animation */
+@keyframes flashcard-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-flashcard-fade-in {
+  animation: flashcard-fade-in 400ms ease-out forwards;
+}
+
+/* Course material slide in animation */
+@keyframes materialSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Category badge pop animation */
+@keyframes categoryBadgePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* PDF Viewer transparent background */
+.rpv-core__viewer,
+.rpv-core__inner-container,
+.rpv-core__inner-pages,
+.rpv-core__inner-page-container,
+.rpv-core__inner-page,
+.rpv-core__page-layer,
+.rpv-core__canvas-layer,
+[data-testid^="core__inner-current-page"] {
+  background-color: transparent !important;
+}

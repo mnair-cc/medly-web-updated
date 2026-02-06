@@ -1,0 +1,287 @@
+name: Deployment Awareness Report
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment to compare against'
+        required: true
+        type: choice
+        options:
+          - medly-web-production
+          - medly-open-prod
+
+permissions:
+  contents: read
+  pull-requests: read
+  deployments: read
+
+jobs:
+  deployment-awareness:
+    name: Generate Deployment Awareness Report
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Cursor CLI
+        run: |
+          curl https://cursor.com/install -fsS | bash
+          echo "$HOME/.cursor/bin" >> $GITHUB_PATH
+
+      - name: Set app filter based on environment
+        id: app_filter
+        run: |
+          # Map environment to app directory
+          if [ "${{ inputs.environment }}" = "medly-web-production" ]; then
+            echo "app_path=apps/exams" >> $GITHUB_OUTPUT
+            echo "app_name=exams" >> $GITHUB_OUTPUT
+            echo "Filtering changes for: apps/exams (Exams Platform)"
+          elif [ "${{ inputs.environment }}" = "medly-open-prod" ]; then
+            echo "app_path=apps/open" >> $GITHUB_OUTPUT
+            echo "app_name=open" >> $GITHUB_OUTPUT
+            echo "Filtering changes for: apps/open (Open Platform)"
+          else
+            echo "::error::Unknown environment: ${{ inputs.environment }}"
+            exit 1
+          fi
+
+      - name: Get latest deployment commit
+        id: deployment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Fetching latest successful deployment for environment: ${{ inputs.environment }}"
+          
+          # Get deployments for the specified environment (sorted by created_at desc by default)
+          DEPLOYMENTS=$(gh api \
+            "repos/${{ github.repository }}/deployments?environment=${{ inputs.environment }}&per_page=20" \
+            --jq '.')
+          
+          if [ -z "$DEPLOYMENTS" ] || [ "$DEPLOYMENTS" = "[]" ]; then
+            echo "::error::No deployments found for environment ${{ inputs.environment }}"
+            exit 1
+          fi
+          
+          # Iterate through deployments to find the first one with a successful status
+          DEPLOYMENT_SHA=""
+          DEPLOYMENT_ID=""
+          DEPLOYMENT_DATE=""
+          
+          for row in $(echo "$DEPLOYMENTS" | jq -r '.[] | @base64'); do
+            _jq() {
+              echo ${row} | base64 --decode | jq -r ${1}
+            }
+            
+            DEP_ID=$(_jq '.id')
+            DEP_SHA=$(_jq '.sha')
+            DEP_DATE=$(_jq '.created_at')
+            
+            echo "Checking deployment $DEP_ID (SHA: $DEP_SHA)..."
+            
+            # Get deployment statuses for this deployment
+            # Status can be: error, failure, inactive, in_progress, queued, pending, success
+            STATUS=$(gh api \
+              "repos/${{ github.repository }}/deployments/${DEP_ID}/statuses" \
+              --jq '.[0].state // "unknown"')
+            
+            echo "  Status: $STATUS"
+            
+            if [ "$STATUS" = "success" ]; then
+              DEPLOYMENT_SHA="$DEP_SHA"
+              DEPLOYMENT_ID="$DEP_ID"
+              DEPLOYMENT_DATE="$DEP_DATE"
+              echo "Found successful deployment!"
+              break
+            fi
+          done
+          
+          if [ -z "$DEPLOYMENT_SHA" ]; then
+            echo "::error::No successful deployment found for environment ${{ inputs.environment }}"
+            exit 1
+          fi
+          
+          echo "deployment_sha=$DEPLOYMENT_SHA" >> $GITHUB_OUTPUT
+          echo "deployment_date=$DEPLOYMENT_DATE" >> $GITHUB_OUTPUT
+          
+          echo ""
+          echo "Latest successful deployment:"
+          echo "  SHA: $DEPLOYMENT_SHA"
+          echo "  ID: $DEPLOYMENT_ID"
+          echo "  Date: $DEPLOYMENT_DATE"
+
+      - name: Get merged PRs since deployment
+        id: prs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPLOYMENT_SHA: ${{ steps.deployment.outputs.deployment_sha }}
+          APP_PATH: ${{ steps.app_filter.outputs.app_path }}
+          APP_NAME: ${{ steps.app_filter.outputs.app_name }}
+        run: |
+          echo "Finding merged PRs since deployment..."
+          echo "Filtering for PRs that affect: $APP_NAME (path: $APP_PATH)"
+          
+          # Get list of commits since deployment
+          git log --oneline $DEPLOYMENT_SHA..HEAD > commits_since_deploy.txt
+          TOTAL_COMMIT_COUNT=$(wc -l < commits_since_deploy.txt)
+          
+          echo "Found $TOTAL_COMMIT_COUNT total commits since last deployment"
+          
+          # Extract PR numbers from merge commits using commit ancestry (precise method)
+          # This avoids the date granularity issue by using actual git history
+          # Note: grep returns exit code 1 when no matches found, so we use || true to prevent pipeline failure
+          touch all_pr_numbers.txt
+          git log --oneline --merges $DEPLOYMENT_SHA..HEAD | \
+            grep -oE "Merge pull request #[0-9]+" | \
+            grep -oE "[0-9]+" >> all_pr_numbers.txt || true
+          
+          # Also capture squash-merged PRs (format: "title (#123)")
+          git log --oneline $DEPLOYMENT_SHA..HEAD | \
+            grep -oE "\(#[0-9]+\)" | \
+            grep -oE "[0-9]+" >> all_pr_numbers.txt || true
+          
+          # Deduplicate PR numbers
+          sort -u all_pr_numbers.txt -o all_pr_numbers.txt
+          
+          TOTAL_PR_COUNT=$(wc -l < all_pr_numbers.txt | tr -d ' ')
+          echo "Found $TOTAL_PR_COUNT total merged PRs since deployment"
+          
+          # Fetch full details for each PR and filter by app
+          echo "[]" > all_prs.json
+          echo "[]" > merged_prs.json
+          touch pr_numbers.txt
+          
+          while read -r pr_num; do
+            if [ -n "$pr_num" ]; then
+              echo "Fetching details for PR #$pr_num..."
+              PR_DATA=$(gh pr view "$pr_num" --json number,title,author,mergedAt,body,labels,files 2>/dev/null || echo "null")
+              if [ "$PR_DATA" != "null" ] && [ -n "$PR_DATA" ]; then
+                # Store in all_prs.json for reference
+                jq --argjson pr "$PR_DATA" '. += [$pr]' all_prs.json > all_prs_tmp.json
+                mv all_prs_tmp.json all_prs.json
+                
+                # Check if this PR affects the selected app or infrastructure
+                # A PR is relevant if it touches:
+                # 1. Files in the app directory (e.g., apps/exams/)
+                # 2. Infrastructure files (files outside apps/)
+                AFFECTS_APP=$(echo "$PR_DATA" | jq --arg app_path "$APP_PATH" '
+                  .files // [] | 
+                  map(.path) | 
+                  any(. | (startswith($app_path + "/") or (startswith("apps/") | not)))
+                ')
+                
+                if [ "$AFFECTS_APP" = "true" ]; then
+                  echo "  -> PR #$pr_num affects $APP_NAME or infrastructure, including in report"
+                  echo "$pr_num" >> pr_numbers.txt
+                  jq --argjson pr "$PR_DATA" '. += [$pr]' merged_prs.json > merged_prs_tmp.json
+                  mv merged_prs_tmp.json merged_prs.json
+                else
+                  echo "  -> PR #$pr_num does not affect $APP_NAME, excluding from report"
+                fi
+              fi
+            fi
+          done < all_pr_numbers.txt
+          
+          # Count filtered PRs and commits
+          FILTERED_PR_COUNT=$(wc -l < pr_numbers.txt | tr -d ' ')
+          
+          # Count commits that affect the selected app
+          FILTERED_COMMIT_COUNT=$(git log --oneline $DEPLOYMENT_SHA..HEAD -- "$APP_PATH/" | wc -l | tr -d ' ')
+          INFRA_COMMIT_COUNT=$(git log --oneline $DEPLOYMENT_SHA..HEAD -- . ':!apps/' 2>/dev/null | wc -l | tr -d ' ')
+          COMMIT_COUNT=$((FILTERED_COMMIT_COUNT + INFRA_COMMIT_COUNT))
+          
+          echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+          echo "pr_count=$FILTERED_PR_COUNT" >> $GITHUB_OUTPUT
+          echo "total_commit_count=$TOTAL_COMMIT_COUNT" >> $GITHUB_OUTPUT
+          echo "total_pr_count=$TOTAL_PR_COUNT" >> $GITHUB_OUTPUT
+          
+          echo ""
+          echo "Filtered Results for $APP_NAME:"
+          echo "  PRs affecting $APP_NAME: $FILTERED_PR_COUNT (out of $TOTAL_PR_COUNT total)"
+          echo "  Commits affecting $APP_NAME: $COMMIT_COUNT (out of $TOTAL_COMMIT_COUNT total)"
+          
+          # Create a summary of filtered PRs for the report
+          jq -r '.[] | "PR #\(.number): \(.title) (by @\(.author.login))"' merged_prs.json > pr_summary.txt
+          
+          echo ""
+          echo "Filtered PR Summary:"
+          cat pr_summary.txt
+
+      - name: Get changed files since deployment
+        env:
+          DEPLOYMENT_SHA: ${{ steps.deployment.outputs.deployment_sha }}
+          APP_PATH: ${{ steps.app_filter.outputs.app_path }}
+          APP_NAME: ${{ steps.app_filter.outputs.app_name }}
+        run: |
+          echo "Analyzing changed files since deployment..."
+          echo "Filtering for app: $APP_NAME (path: $APP_PATH)"
+          
+          # Get all changed files since the deployment (unfiltered, for reference)
+          git diff --name-only $DEPLOYMENT_SHA..HEAD > all_changed_files_unfiltered.txt
+          
+          # Filter to only include files relevant to the selected app:
+          # 1. Files in the app directory (e.g., apps/exams/)
+          # 2. Infrastructure files (outside apps/) that could affect all apps
+          grep "^${APP_PATH}/" all_changed_files_unfiltered.txt > app_specific_changes.txt 2>/dev/null || touch app_specific_changes.txt
+          grep -v "^apps/" all_changed_files_unfiltered.txt > infra_changes.txt 2>/dev/null || touch infra_changes.txt
+          
+          # Combine app-specific and infrastructure changes for the filtered view
+          cat app_specific_changes.txt infra_changes.txt > all_changed_files.txt
+          
+          # Categorize files by platform (for reference in report)
+          grep "^apps/exams/" all_changed_files_unfiltered.txt > exams_changes.txt 2>/dev/null || touch exams_changes.txt
+          grep "^apps/open/" all_changed_files_unfiltered.txt > open_changes.txt 2>/dev/null || touch open_changes.txt
+          
+          # Identify route changes (only for the selected app)
+          grep -E "${APP_PATH}/src/app/.*page\.tsx" all_changed_files.txt > route_changes.txt 2>/dev/null || touch route_changes.txt
+          
+          # Identify test/agent changes (only for the selected app and infra)
+          grep -E "(\.test\.|\.spec\.|/e2e/|/__tests__/|agents?)" all_changed_files.txt > dx_changes.txt 2>/dev/null || touch dx_changes.txt
+          
+          # Create file stats
+          echo ""
+          echo "File Statistics (filtered for $APP_NAME):"
+          echo "  Total files in scope: $(wc -l < all_changed_files.txt)"
+          echo "  App-specific changes ($APP_NAME): $(wc -l < app_specific_changes.txt)"
+          echo "  Infrastructure changes: $(wc -l < infra_changes.txt)"
+          echo "  Route changes: $(wc -l < route_changes.txt)"
+          echo "  DX/Test changes: $(wc -l < dx_changes.txt)"
+          echo ""
+          echo "Reference (all platforms):"
+          echo "  Total changed files (unfiltered): $(wc -l < all_changed_files_unfiltered.txt)"
+          echo "  Exams changes: $(wc -l < exams_changes.txt)"
+          echo "  Open changes: $(wc -l < open_changes.txt)"
+
+      - name: Get diff statistics
+        env:
+          DEPLOYMENT_SHA: ${{ steps.deployment.outputs.deployment_sha }}
+        run: |
+          # Get the full diff for analysis
+          git diff $DEPLOYMENT_SHA..HEAD > full_diff.txt
+          
+          # Get diff stats
+          git diff --stat $DEPLOYMENT_SHA..HEAD > diff_stats.txt
+          
+          echo "Diff statistics:"
+          tail -1 diff_stats.txt
+
+      - name: Run Deployment Awareness Analysis
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENVIRONMENT: ${{ inputs.environment }}
+          DEPLOYMENT_SHA: ${{ steps.deployment.outputs.deployment_sha }}
+          DEPLOYMENT_DATE: ${{ steps.deployment.outputs.deployment_date }}
+          COMMIT_COUNT: ${{ steps.prs.outputs.commit_count }}
+          PR_COUNT: ${{ steps.prs.outputs.pr_count }}
+          TOTAL_COMMIT_COUNT: ${{ steps.prs.outputs.total_commit_count }}
+          TOTAL_PR_COUNT: ${{ steps.prs.outputs.total_pr_count }}
+          APP_PATH: ${{ steps.app_filter.outputs.app_path }}
+          APP_NAME: ${{ steps.app_filter.outputs.app_name }}
+        run: |
+          agent --force --model opus-4.5-thinking --print \
+            "$(envsubst < .github/deployment-awareness-prompt.md)"

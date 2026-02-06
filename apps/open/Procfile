@@ -1,0 +1,2 @@
+web: npm run -w open start
+release: npm run -w open db:release

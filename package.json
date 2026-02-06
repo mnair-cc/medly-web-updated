@@ -1,0 +1,35 @@
+{
+  "name": "medly-web",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo start",
+    "lint": "turbo run lint",
+    "check-types": "turbo run check-types",
+    "test": "turbo run test",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "dev:exams": "turbo dev --filter=exams",
+    "dev:open": "turbo dev --filter=open",
+    "build:exams": "turbo build --filter=exams",
+    "build:open": "turbo build --filter=open",
+    "heroku-postbuild": "turbo build --filter=${APP_NAME:-exams} && cp apps/${APP_NAME:-exams}/Procfile .",
+    "heroku-cleanup": "bash scripts/heroku-cleanup.sh"
+  },
+  "devDependencies": {
+    "prettier": "^3.7.4",
+    "turbo": "^2.8.1",
+    "typescript": "^5"
+  },
+  "packageManager": "npm@11.6.2",
+  "engines": {
+    "node": "20.x"
+  },
+  "dependencies": {
+    "@quail-ai/azure-ai-provider": "^2.0.0"
+  }
+}

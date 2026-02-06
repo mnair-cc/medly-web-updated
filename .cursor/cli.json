@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(cat)",
+      "Shell(gh)",
+      "Shell(echo)",
+      "Read(**/*)",
+      "Write(changed_files.txt)",
+      "Write(pr_body.txt)",
+      "Write(updated_body.txt)"
+    ],
+    "deny": [
+      "Shell(git)",
+      "Shell(rm)",
+      "Write(src/**)",
+      "Write(package.json)",
+      "Write(package-lock.json)",
+      "Write(.env*)"
+    ]
+  }
+}
