@@ -8,20 +8,15 @@ applications:
           commands:
             - nvm install 20
             - nvm use 20
-            - pwd
-            - ls -la
-            - ls -la ../../
-            - cd ../../ && npm ci
+            - npm ci
         build:
           commands:
-            - pwd
-            - ls -la
-            - npx next build
+            - cd apps/exams && npx next build
       artifacts:
-        baseDirectory: .next
+        baseDirectory: apps/exams/.next
         files:
           - "**/*"
       cache:
         paths:
-          - ../../node_modules/**/*
-          - .next/cache/**/*
+          - node_modules/**/*
+          - apps/exams/.next/cache/**/*
