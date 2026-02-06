@@ -1,0 +1,22 @@
+version: 1
+applications:
+  - appRoot: apps/exams
+    framework: nextjs
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - nvm install 20
+            - nvm use 20
+            - cd ../../ && npm ci
+        build:
+          commands:
+            - cd ../../ && npx turbo build --filter=exams
+      artifacts:
+        baseDirectory: .next
+        files:
+          - "**/*"
+      cache:
+        paths:
+          - "../../node_modules/**/*"
+          - ".next/cache/**/*"
