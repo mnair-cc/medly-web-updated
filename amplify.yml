@@ -11,9 +11,7 @@ applications:
             - npm ci
         build:
           commands:
-            - pwd
-            - ls -la
-            - ls -la src/
+            - env | grep -E '^(NEXT_|AUTH_|FIREBASE_|STRIPE_|SENTRY_|POSTHOG_|RESEND_|MATHPIX_|GOOGLE_|META_|TIKTOK_|DOC_|VERIFICATION_|ENABLE_|NEXTAUTH_|SIGNUP_|ANTHROPIC_|GA_|MAINTENANCE_|MIDDLEWARE_|PAPERTRAIL_|REVENUECAT_)' >> .env.production
             - npx next build
       artifacts:
         baseDirectory: .next
